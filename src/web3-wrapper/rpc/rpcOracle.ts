@@ -1,4 +1,4 @@
-import {CHAINID} from '../../constants';
+import { CHAINID } from '../../constants';
 
 export class RPCOracle {
   private rpcs: string[];
@@ -9,11 +9,20 @@ export class RPCOracle {
     if (!Object.entries(CHAINID).some((e) => e[1] === String(networkId))) {
       throw new Error(`Chain with ID ${networkId} not found.`);
     }
-    this.rpcs = rpcUrls;
+    this.rpcs = this.shuffleRpcUrls(rpcUrls);
   }
 
   getRpcCount(): number {
     return this.rpcs.length;
+  }
+
+  shuffleRpcUrls(rpcUrls: string[]): string[] {
+    let shuffledRpcUrls = rpcUrls.slice(); 
+    for (let i = shuffledRpcUrls.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledRpcUrls[i], shuffledRpcUrls[j]] = [shuffledRpcUrls[j], shuffledRpcUrls[i]];
+    }
+    return shuffledRpcUrls;
   }
 
   getNextAvailableRpc() {

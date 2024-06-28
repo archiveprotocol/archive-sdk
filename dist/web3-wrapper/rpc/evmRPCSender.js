@@ -60,6 +60,8 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
                     const errorMessage = this.getErrorMessage(error, selectedRpcUrl);
                     this.logger.error(errorMessage);
                     kafkaManager === null || kafkaManager === void 0 ? void 0 : kafkaManager.sendRpcFailureToKafka(selectedRpcUrl, String(this.networkId), this.rpcProviderFn, error.message, this.requestId);
+                    if (!this.shouldRetry(error))
+                        break;
                 }
             }
             const errorMessage = `All RPCs failed for networkId: ${this.networkId}, function called: ${this.rpcProviderFn.toString()}`;
