@@ -13,12 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EvmContractReader = void 0;
+const web3_wrapper_1 = require("../..//web3-wrapper");
 const utils_1 = require("./utils");
 const bignumber_js_1 = __importDefault(require("bignumber.js"));
 const ethers_1 = require("ethers");
-const web3_wrapper_1 = require("../..//web3-wrapper");
 // Please set your favorable and reliable RPC URLs
-const rpcUrls = ['https://polygon-rpc.com', 'https://rpc.ankr.com/polygon'];
+const rpcs = [
+    { url: 'https://polygon-rpc.com', weight: 1 },
+    { url: 'https://rpc.ankr.com/polygon', weight: 1 },
+];
 class EvmContractReader {
     constructor(context) {
         this.context = context;
@@ -27,7 +30,7 @@ class EvmContractReader {
     fetchOrCachedTx(txHash) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const tx = yield (0, web3_wrapper_1.executeCallOrSend)(rpcUrls, this.networkId, (provider) => {
+                const tx = yield (0, web3_wrapper_1.executeCallOrSend)(rpcs, this.networkId, (provider) => {
                     return provider.getTransaction(txHash);
                 });
                 if (tx) {
@@ -44,7 +47,7 @@ class EvmContractReader {
     fetchOrCachedTxReceipt(txHash) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const receipt = yield (0, web3_wrapper_1.executeCallOrSend)(rpcUrls, this.networkId, (provider) => {
+                const receipt = yield (0, web3_wrapper_1.executeCallOrSend)(rpcs, this.networkId, (provider) => {
                     return provider.getTransactionReceipt(txHash);
                 });
                 if (receipt) {
@@ -71,7 +74,7 @@ class EvmContractReader {
                         type: 'function',
                     },
                 ];
-                const decimalsPlaces = yield (0, web3_wrapper_1.executeCallOrSend)(rpcUrls, this.networkId, (provider) => {
+                const decimalsPlaces = yield (0, web3_wrapper_1.executeCallOrSend)(rpcs, this.networkId, (provider) => {
                     const contract = new ethers_1.ethers.Contract(tokenAddrs, abi, provider);
                     return contract.decimals();
                 });
@@ -86,7 +89,7 @@ class EvmContractReader {
     fetchOrCachedGasPrice() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const gasPrice = yield (0, web3_wrapper_1.executeCallOrSend)(rpcUrls, this.networkId, (provider) => {
+                const gasPrice = yield (0, web3_wrapper_1.executeCallOrSend)(rpcs, this.networkId, (provider) => {
                     return provider.getGasPrice();
                 });
                 if (gasPrice) {

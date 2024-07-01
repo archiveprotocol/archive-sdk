@@ -10,6 +10,9 @@ class AbstractRPCSender {
             return `Error on RPC ${rpcUrl}, code: ${error.code}, message: ${error.message}`;
         }
     }
+    shouldRetry(error) {
+        return ['NETWORK_ERROR', 'SERVER_ERROR'].includes(error.code) || [403, 429].includes(error.status);
+    }
 }
 exports.AbstractRPCSender = AbstractRPCSender;
 //# sourceMappingURL=abstractRPCSender.js.map

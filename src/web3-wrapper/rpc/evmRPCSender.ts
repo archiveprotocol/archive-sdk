@@ -1,5 +1,6 @@
 import { CHAINID } from '../../constants';
 import { KafkaManager } from '../../logging';
+import { RpcInfo } from '../../web3-wrapper/rpc/rpcInfo';
 import { ArchiveLogger, REQUEST_ID } from '../logger';
 import { AbstractRPCSender } from './abstractRPCSender';
 import { RPCOracle } from './rpcOracle';
@@ -15,14 +16,14 @@ export class EvmRPCSender extends AbstractRPCSender {
   private timeoutMilliseconds = 10000;
 
   constructor(
-    rpcUrls: string[],
+    rpcInfos: RpcInfo[],
     private networkId: number | string,
     private rpcProviderFn: (provider: ethers.providers.StaticJsonRpcProvider) => Promise<any>,
     private requestId?: string,
     private attemptFallback = true,
   ) {
     super();
-    this.rpcOracle = new RPCOracle(networkId, rpcUrls);
+    this.rpcOracle = new RPCOracle(networkId, rpcInfos);
 
     this.maxAttempts = this.attemptFallback ? this.rpcOracle.getRpcCount() : 1;
 

@@ -1,11 +1,15 @@
+import { executeCallOrSend } from '../..//web3-wrapper';
+import { RpcInfo } from '../../web3-wrapper/rpc/rpcInfo';
 import { BlueprintContext } from '../models';
 import { formatAsDecimalAwareString } from './utils';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { executeCallOrSend } from '../..//web3-wrapper';
 
 // Please set your favorable and reliable RPC URLs
-const rpcUrls = ['https://polygon-rpc.com', 'https://rpc.ankr.com/polygon'];
+const rpcs: RpcInfo[] = [
+  { url: 'https://polygon-rpc.com', weight: 1 },
+  { url: 'https://rpc.ankr.com/polygon', weight: 1 },
+];
 
 export class EvmContractReader {
   private readonly networkId: number;
@@ -16,7 +20,7 @@ export class EvmContractReader {
 
   async fetchOrCachedTx(txHash): Promise<ethers.providers.TransactionResponse> {
     try {
-      const tx = await executeCallOrSend(rpcUrls, this.networkId, (provider: ethers.providers.Provider) => {
+      const tx = await executeCallOrSend(rpcs, this.networkId, (provider: ethers.providers.Provider) => {
         return provider.getTransaction(txHash);
       });
 
@@ -32,7 +36,7 @@ export class EvmContractReader {
 
   async fetchOrCachedTxReceipt(txHash: string): Promise<ethers.providers.TransactionReceipt> {
     try {
-      const receipt = await executeCallOrSend(rpcUrls, this.networkId, (provider: ethers.providers.Provider) => {
+      const receipt = await executeCallOrSend(rpcs, this.networkId, (provider: ethers.providers.Provider) => {
         return provider.getTransactionReceipt(txHash);
       });
 
@@ -59,7 +63,7 @@ export class EvmContractReader {
         },
       ];
 
-      const decimalsPlaces = await executeCallOrSend(rpcUrls, this.networkId, (provider: ethers.providers.Provider) => {
+      const decimalsPlaces = await executeCallOrSend(rpcs, this.networkId, (provider: ethers.providers.Provider) => {
         const contract = new ethers.Contract(tokenAddrs, abi, provider);
         return contract.decimals();
       });
@@ -72,7 +76,7 @@ export class EvmContractReader {
 
   async fetchOrCachedGasPrice(): Promise<BigNumber> {
     try {
-      const gasPrice = await executeCallOrSend(rpcUrls, this.networkId, (provider: ethers.providers.Provider) => {
+      const gasPrice = await executeCallOrSend(rpcs, this.networkId, (provider: ethers.providers.Provider) => {
         return provider.getGasPrice();
       });
 

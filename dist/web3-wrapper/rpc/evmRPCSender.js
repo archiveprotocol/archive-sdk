@@ -19,14 +19,14 @@ const sdk_1 = require("@eth-optimism/sdk");
 const ethers_1 = require("ethers");
 const perf_hooks_1 = require("perf_hooks");
 class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
-    constructor(rpcUrls, networkId, rpcProviderFn, requestId, attemptFallback = true) {
+    constructor(rpcInfos, networkId, rpcProviderFn, requestId, attemptFallback = true) {
         super();
         this.networkId = networkId;
         this.rpcProviderFn = rpcProviderFn;
         this.requestId = requestId;
         this.attemptFallback = attemptFallback;
         this.timeoutMilliseconds = 10000;
-        this.rpcOracle = new rpcOracle_1.RPCOracle(networkId, rpcUrls);
+        this.rpcOracle = new rpcOracle_1.RPCOracle(networkId, rpcInfos);
         this.maxAttempts = this.attemptFallback ? this.rpcOracle.getRpcCount() : 1;
         this.logger = logger_1.ArchiveLogger.getLogger();
         if (this.requestId)
@@ -60,6 +60,8 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
                     const errorMessage = this.getErrorMessage(error, selectedRpcUrl);
                     this.logger.error(errorMessage);
                     kafkaManager === null || kafkaManager === void 0 ? void 0 : kafkaManager.sendRpcFailureToKafka(selectedRpcUrl, String(this.networkId), this.rpcProviderFn, error.message, this.requestId);
+                    if (!this.shouldRetry(error))
+                        break;
                 }
             }
             const errorMessage = `All RPCs failed for networkId: ${this.networkId}, function called: ${this.rpcProviderFn.toString()}`;

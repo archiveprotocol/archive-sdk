@@ -1,4 +1,5 @@
 import { KafkaManager } from '../../logging';
+import { RpcInfo } from '../../web3-wrapper/rpc/rpcInfo';
 import { ArchiveLogger, REQUEST_ID } from '../logger';
 import { AbstractRPCSender } from './abstractRPCSender';
 import { RPCOracle } from './rpcOracle';
@@ -12,14 +13,14 @@ export class SolanaRPCSender extends AbstractRPCSender {
   private logger: Logger;
 
   constructor(
-    rpcUrls: string[],
+    rpcInfos: RpcInfo[],
     private networkId: number | string,
     private rpcProviderFn: (conn: web3_solana.Connection) => Promise<any>,
     private requestId?: string,
     private attemptFallback = true,
   ) {
     super();
-    this.rpcOracle = new RPCOracle(networkId, rpcUrls);
+    this.rpcOracle = new RPCOracle(networkId, rpcInfos);
 
     this.maxAttempts = this.attemptFallback ? this.rpcOracle.getRpcCount() : 1;
 

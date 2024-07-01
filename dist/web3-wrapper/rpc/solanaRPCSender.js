@@ -20,13 +20,13 @@ const rpcOracle_1 = require("./rpcOracle");
 const web3_js_1 = __importDefault(require("@solana/web3.js"));
 const perf_hooks_1 = require("perf_hooks");
 class SolanaRPCSender extends abstractRPCSender_1.AbstractRPCSender {
-    constructor(rpcUrls, networkId, rpcProviderFn, requestId, attemptFallback = true) {
+    constructor(rpcInfos, networkId, rpcProviderFn, requestId, attemptFallback = true) {
         super();
         this.networkId = networkId;
         this.rpcProviderFn = rpcProviderFn;
         this.requestId = requestId;
         this.attemptFallback = attemptFallback;
-        this.rpcOracle = new rpcOracle_1.RPCOracle(networkId, rpcUrls);
+        this.rpcOracle = new rpcOracle_1.RPCOracle(networkId, rpcInfos);
         this.maxAttempts = this.attemptFallback ? this.rpcOracle.getRpcCount() : 1;
         this.logger = logger_1.ArchiveLogger.getLogger();
         if (this.requestId)
