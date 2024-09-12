@@ -65,13 +65,13 @@ export class EvmRPCSender extends AbstractRPCSender {
           error.message,
           this.requestId,
         );
+        console.log('retrying the RPC request');
         if (!this.shouldRetry(error)) break;
       }
     }
 
-    const errorMessage = `All RPCs failed for networkId: ${
-      this.networkId
-    }, function called: ${this.rpcProviderFn.toString()}`;
+    const errorMessage = `All RPCs failed for networkId: ${this.networkId
+      }, function called: ${this.rpcProviderFn.toString()}`;
     this.logger.error(errorMessage);
     return null;
   }
