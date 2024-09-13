@@ -42,6 +42,7 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
                 throw new Error('RPC Provider function is not defined');
             }
             for (let attempt = 0; attempt < this.maxAttempts; attempt++) {
+                this.logger.info('Executing re-try', attempt);
                 const selectedRpc = this.rpcOracle.getNextAvailableRpc();
                 if (!selectedRpc) {
                     continue;
@@ -59,12 +60,14 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
                     const errorMessage = this.getErrorMessage(error, selectedRpc.url);
                     this.logger.error(errorMessage);
                     kafkaManager === null || kafkaManager === void 0 ? void 0 : kafkaManager.sendRpcFailureToKafka(selectedRpc.url, String(this.networkId), this.rpcProviderFn, error.message, this.requestId);
+                    this.logger.error('Retrying the RPC call');
                     if (!this.shouldRetry(error))
                         break;
                 }
             }
             const errorMessage = `All RPCs failed for networkId: ${this.networkId}, function called: ${this.rpcProviderFn.toString()}`;
             this.logger.error(errorMessage);
+            this.logger.info('here?');
             return null;
         });
     }
