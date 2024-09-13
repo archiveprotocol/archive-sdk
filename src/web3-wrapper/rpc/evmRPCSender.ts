@@ -65,7 +65,7 @@ export class EvmRPCSender extends AbstractRPCSender {
           error.message,
           this.requestId,
         );
-        console.log('retrying the RPC request');
+        this.logger.log('Retrying the RPC call');
         if (!this.shouldRetry(error)) break;
       }
     }
