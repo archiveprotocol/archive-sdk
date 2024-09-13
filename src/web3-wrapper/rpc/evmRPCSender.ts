@@ -74,6 +74,7 @@ export class EvmRPCSender extends AbstractRPCSender {
     const errorMessage = `All RPCs failed for networkId: ${this.networkId
       }, function called: ${this.rpcProviderFn.toString()}`;
     this.logger.error(errorMessage);
+    this.logger.info('here?');
     return null;
   }
 
