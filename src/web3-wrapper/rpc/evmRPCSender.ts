@@ -42,6 +42,7 @@ export class EvmRPCSender extends AbstractRPCSender {
     }
 
     for (let attempt = 0; attempt < this.maxAttempts; attempt++) {
+      this.logger.info('Executing re-try', attempt);
       const selectedRpc = this.rpcOracle.getNextAvailableRpc();
       if (!selectedRpc) {
         continue;
@@ -65,7 +66,7 @@ export class EvmRPCSender extends AbstractRPCSender {
           error.message,
           this.requestId,
         );
-        this.logger.log('Retrying the RPC call');
+        this.logger.error('Retrying the RPC call');
         if (!this.shouldRetry(error)) break;
       }
     }
