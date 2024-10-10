@@ -42,4 +42,5 @@ __exportStar(require("./userTransactionResults"), exports);
 __exportStar(require("./blockbydateAPIInterface"), exports);
 __exportStar(require("./defiPriceAPIInterface"), exports);
 __exportStar(require("./blockTimestampDto"), exports);
+__exportStar(require("./exchangePrice"), exports);
 //# sourceMappingURL=index.js.map

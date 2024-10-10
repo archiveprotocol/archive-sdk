@@ -26,3 +26,4 @@ export * from './userTransactionResults';
 export * from './blockbydateAPIInterface';
 export * from './defiPriceAPIInterface';
 export * from './blockTimestampDto';
+export * from './exchangePrice';

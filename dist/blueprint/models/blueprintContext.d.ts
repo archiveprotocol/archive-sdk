@@ -71,7 +71,7 @@ export declare abstract class BlueprintContext {
   setChildrenBlueprints(childrenBlueprints: Blueprint[]): void;
   abstract setNetworkConfig(networkId: any): NetworkConfig;
   abstract getComposedBlueprintKey(): string | null;
-  abstract getContractReader(): any;
   abstract getContractReaderByNetwork(network: number | string): any;
+  abstract getContractReader(): any;
   abstract getConfigService(): any;
 }
