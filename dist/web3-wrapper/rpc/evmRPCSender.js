@@ -15,11 +15,12 @@ const logging_1 = require("../../logging");
 const logger_1 = require("../logger");
 const abstractRPCSender_1 = require("./abstractRPCSender");
 const rpcOracle_1 = require("./rpcOracle");
-const sdk_1 = require("@eth-optimism/sdk");
-const ethers_1 = require("ethers");
-const ethers_v6_1 = require("ethers-v6");
+const viem_1 = require("viem");
+const chains_1 = require("viem/chains");
 const https_proxy_agent_1 = require("https-proxy-agent");
 const perf_hooks_1 = require("perf_hooks");
+const ethers_1 = require("ethers");
+const ethers_v6_1 = require("ethers-v6");
 class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
     constructor(rpcInfos, networkId, networkName, rpcProviderFn, proxyServerUrl, requestId, attemptFallback = true) {
         super();
@@ -52,9 +53,9 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
                         this.logger.info(`Retrying the RPC call with, ${selectedRpc.url}, attempt: ${attempt} out of: ${this.maxAttempts}`);
                     }
                     const start = perf_hooks_1.performance.now();
-                    const result = yield this.rpcProviderFn(this.getProviderForCall(selectedRpc));
+                    const provider = this.getProviderForCall(selectedRpc);
+                    const result = yield this.rpcProviderFn(provider);
                     const end = perf_hooks_1.performance.now();
-                    const kafkaManager = logging_1.KafkaManager.getInstance();
                     kafkaManager === null || kafkaManager === void 0 ? void 0 : kafkaManager.sendRpcResponseTimeToKafka(selectedRpc.url, end - start, this.requestId);
                     return result;
                 }
@@ -74,15 +75,28 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
     isOptimismOrBaseNetwork(networkId) {
         return networkId === constants_1.CHAINID.OPTIMISM || networkId === constants_1.CHAINID.BASE;
     }
+    getViemChain(networkId) {
+        switch (networkId) {
+            case constants_1.CHAINID.OPTIMISM:
+                return chains_1.optimism;
+            case constants_1.CHAINID.BASE:
+                return chains_1.base;
+            default:
+                throw new Error(`Unsupported OP Stack chain: ${networkId}`);
+        }
+    }
     getProviderForCall(selectedRpc) {
         if (!selectedRpc) {
             selectedRpc = this.rpcOracle.getNextAvailableRpc();
         }
         if (this.isOptimismOrBaseNetwork(String(this.networkId))) {
-            return (0, sdk_1.asL2Provider)(new ethers_1.ethers.providers.StaticJsonRpcProvider({
-                url: selectedRpc.url,
+            const transport = (0, viem_1.http)(selectedRpc.url, {
                 timeout: this.timeoutMilliseconds,
-            }));
+            });
+            return (0, viem_1.createPublicClient)({
+                chain: this.getViemChain(String(this.networkId)),
+                transport,
+            });
         }
         if (selectedRpc.requiresProxy && this.proxyServerUrl) {
             return this.getProxyRPCProvider(selectedRpc.url);

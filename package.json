@@ -72,7 +72,8 @@
     "kafkajs": "2.2.4",
     "log4js": "6.9.1",
     "only-allow": "1.2.1",
-    "redis": "4.6.8"
+    "redis": "4.6.8",
+    "viem": "^2.21.32"
   },
   "engines": {
     "node": "20.9",

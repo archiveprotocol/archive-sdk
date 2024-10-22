@@ -1,6 +1,8 @@
 import { RpcInfo } from '../../web3-wrapper/rpc/rpcInfo';
 import { ArchiveJsonRpcProvider } from '../networkConfigurations';
 import { AbstractRPCSender } from './abstractRPCSender';
+import { Client, Transport, Chain } from 'viem';
+export type Provider = ArchiveJsonRpcProvider | Client<Transport, Chain>;
 export declare class EvmRPCSender extends AbstractRPCSender {
     private networkId;
     private networkName;
@@ -12,9 +14,10 @@ export declare class EvmRPCSender extends AbstractRPCSender {
     private maxAttempts;
     private logger;
     private timeoutMilliseconds;
-    constructor(rpcInfos: RpcInfo[], networkId: number | string, networkName: string, rpcProviderFn?: (provider: ArchiveJsonRpcProvider) => Promise<any>, proxyServerUrl?: string, requestId?: string, attemptFallback?: boolean);
+    constructor(rpcInfos: RpcInfo[], networkId: number | string, networkName: string, rpcProviderFn?: (provider: Provider) => Promise<any>, proxyServerUrl?: string, requestId?: string, attemptFallback?: boolean);
     executeCallOrSend(): Promise<any>;
     private isOptimismOrBaseNetwork;
-    getProviderForCall(selectedRpc?: RpcInfo): ArchiveJsonRpcProvider;
+    private getViemChain;
+    getProviderForCall(selectedRpc?: RpcInfo): Provider;
     private getProxyRPCProvider;
 }
