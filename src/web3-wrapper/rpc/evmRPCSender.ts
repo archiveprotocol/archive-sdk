@@ -5,16 +5,27 @@ import { ArchiveLogger, REQUEST_ID } from '../logger';
 import { ArchiveJsonRpcProvider } from '../networkConfigurations';
 import { AbstractRPCSender } from './abstractRPCSender';
 import { RPCOracle } from './rpcOracle';
-import { createPublicClient, http, PublicClient, Client, Transport, Chain } from 'viem';
-import { base, optimism } from 'viem/chains';
+import {
+  createPublicClient,
+  http,
+  PublicClient,
+  HttpTransport,
+  Chain,
+  Client
+} from 'viem';
+import {
+  optimism,
+  base,
+} from 'viem/chains';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { Logger } from 'log4js';
 import { performance } from 'perf_hooks';
 import { ethers } from 'ethers';
 import { FetchRequest, JsonRpcProvider, Network } from 'ethers-v6';
+import { publicL2OpStackActions } from 'op-viem';
 
 // Define a type for the provider that includes both possible types
-export type Provider = ArchiveJsonRpcProvider | Client<Transport, Chain>;
+export type Provider = ArchiveJsonRpcProvider | any;
 
 export class EvmRPCSender extends AbstractRPCSender {
   private rpcOracle: RPCOracle;
@@ -54,7 +65,7 @@ export class EvmRPCSender extends AbstractRPCSender {
           this.logger.info(`Retrying the RPC call with, ${selectedRpc.url}, attempt: ${attempt} out of: ${this.maxAttempts}`);
         }
         const start = performance.now();
-        const provider = this.getProviderForCall(selectedRpc);
+        const provider = await this.getProviderForCall(selectedRpc);
         const result = await this.rpcProviderFn(provider);
         const end = performance.now();
         kafkaManager?.sendRpcResponseTimeToKafka(selectedRpc.url, end - start, this.requestId);
@@ -74,8 +85,7 @@ export class EvmRPCSender extends AbstractRPCSender {
       }
     }
 
-    const errorMessage = `All RPCs failed for networkId: ${this.networkId
-      }, function called: ${this.rpcProviderFn.toString()}`;
+    const errorMessage = `All RPCs failed for networkId: ${this.networkId}, function called: ${this.rpcProviderFn.toString()}`;
     this.logger.error(errorMessage);
     return null;
   }
@@ -84,7 +94,7 @@ export class EvmRPCSender extends AbstractRPCSender {
     return networkId === CHAINID.OPTIMISM || networkId === CHAINID.BASE;
   }
 
-  private getViemChain(networkId: string): Chain {
+  private getViemChain(networkId: string) {
     switch (networkId) {
       case CHAINID.OPTIMISM:
         return optimism;
@@ -95,20 +105,19 @@ export class EvmRPCSender extends AbstractRPCSender {
     }
   }
 
-  public getProviderForCall(selectedRpc?: RpcInfo): Provider {
+  public async getProviderForCall(selectedRpc?: RpcInfo): Promise<Provider> {
     if (!selectedRpc) {
       selectedRpc = this.rpcOracle.getNextAvailableRpc();
+      if (!selectedRpc) {
+        throw new Error('No RPC endpoint available');
+      }
     }
 
     if (this.isOptimismOrBaseNetwork(String(this.networkId))) {
-      const transport = http(selectedRpc.url, {
-        timeout: this.timeoutMilliseconds,
-      });
-
       return createPublicClient({
         chain: this.getViemChain(String(this.networkId)),
-        transport,
-      }) as Client<Transport, Chain>;
+        transport: http()
+      });
     }
 
     if (selectedRpc.requiresProxy && this.proxyServerUrl) {
@@ -124,7 +133,11 @@ export class EvmRPCSender extends AbstractRPCSender {
   private getProxyRPCProvider(rpcUrl: string): JsonRpcProvider {
     const fetchReq = new FetchRequest(rpcUrl);
     const staticNetwork = new Network(this.networkName, BigInt(this.networkId));
-    fetchReq.getUrlFunc = FetchRequest.createGetUrlFunc({ agent: new HttpsProxyAgent(this.proxyServerUrl) });
-    return new JsonRpcProvider(fetchReq, Number(this.networkId), { staticNetwork });
+    fetchReq.getUrlFunc = FetchRequest.createGetUrlFunc({
+      agent: new HttpsProxyAgent(this.proxyServerUrl)
+    });
+    return new JsonRpcProvider(fetchReq, Number(this.networkId), {
+      staticNetwork
+    });
   }
 }

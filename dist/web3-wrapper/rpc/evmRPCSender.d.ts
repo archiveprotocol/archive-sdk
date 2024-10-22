@@ -1,8 +1,7 @@
 import { RpcInfo } from '../../web3-wrapper/rpc/rpcInfo';
 import { ArchiveJsonRpcProvider } from '../networkConfigurations';
 import { AbstractRPCSender } from './abstractRPCSender';
-import { Client, Transport, Chain } from 'viem';
-export type Provider = ArchiveJsonRpcProvider | Client<Transport, Chain>;
+export type Provider = ArchiveJsonRpcProvider | any;
 export declare class EvmRPCSender extends AbstractRPCSender {
     private networkId;
     private networkName;
@@ -18,6 +17,6 @@ export declare class EvmRPCSender extends AbstractRPCSender {
     executeCallOrSend(): Promise<any>;
     private isOptimismOrBaseNetwork;
     private getViemChain;
-    getProviderForCall(selectedRpc?: RpcInfo): Provider;
+    getProviderForCall(selectedRpc?: RpcInfo): Promise<Provider>;
     private getProxyRPCProvider;
 }

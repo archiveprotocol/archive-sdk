@@ -53,7 +53,7 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
                         this.logger.info(`Retrying the RPC call with, ${selectedRpc.url}, attempt: ${attempt} out of: ${this.maxAttempts}`);
                     }
                     const start = perf_hooks_1.performance.now();
-                    const provider = this.getProviderForCall(selectedRpc);
+                    const provider = yield this.getProviderForCall(selectedRpc);
                     const result = yield this.rpcProviderFn(provider);
                     const end = perf_hooks_1.performance.now();
                     kafkaManager === null || kafkaManager === void 0 ? void 0 : kafkaManager.sendRpcResponseTimeToKafka(selectedRpc.url, end - start, this.requestId);
@@ -86,31 +86,37 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
         }
     }
     getProviderForCall(selectedRpc) {
-        if (!selectedRpc) {
-            selectedRpc = this.rpcOracle.getNextAvailableRpc();
-        }
-        if (this.isOptimismOrBaseNetwork(String(this.networkId))) {
-            const transport = (0, viem_1.http)(selectedRpc.url, {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!selectedRpc) {
+                selectedRpc = this.rpcOracle.getNextAvailableRpc();
+                if (!selectedRpc) {
+                    throw new Error('No RPC endpoint available');
+                }
+            }
+            if (this.isOptimismOrBaseNetwork(String(this.networkId))) {
+                return (0, viem_1.createPublicClient)({
+                    chain: this.getViemChain(String(this.networkId)),
+                    transport: (0, viem_1.http)()
+                });
+            }
+            if (selectedRpc.requiresProxy && this.proxyServerUrl) {
+                return this.getProxyRPCProvider(selectedRpc.url);
+            }
+            return new ethers_1.ethers.providers.StaticJsonRpcProvider({
+                url: selectedRpc.url,
                 timeout: this.timeoutMilliseconds,
             });
-            return (0, viem_1.createPublicClient)({
-                chain: this.getViemChain(String(this.networkId)),
-                transport,
-            });
-        }
-        if (selectedRpc.requiresProxy && this.proxyServerUrl) {
-            return this.getProxyRPCProvider(selectedRpc.url);
-        }
-        return new ethers_1.ethers.providers.StaticJsonRpcProvider({
-            url: selectedRpc.url,
-            timeout: this.timeoutMilliseconds,
         });
     }
     getProxyRPCProvider(rpcUrl) {
         const fetchReq = new ethers_v6_1.FetchRequest(rpcUrl);
         const staticNetwork = new ethers_v6_1.Network(this.networkName, BigInt(this.networkId));
-        fetchReq.getUrlFunc = ethers_v6_1.FetchRequest.createGetUrlFunc({ agent: new https_proxy_agent_1.HttpsProxyAgent(this.proxyServerUrl) });
-        return new ethers_v6_1.JsonRpcProvider(fetchReq, Number(this.networkId), { staticNetwork });
+        fetchReq.getUrlFunc = ethers_v6_1.FetchRequest.createGetUrlFunc({
+            agent: new https_proxy_agent_1.HttpsProxyAgent(this.proxyServerUrl)
+        });
+        return new ethers_v6_1.JsonRpcProvider(fetchReq, Number(this.networkId), {
+            staticNetwork
+        });
     }
 }
 exports.EvmRPCSender = EvmRPCSender;
