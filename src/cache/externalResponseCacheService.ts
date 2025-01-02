@@ -98,8 +98,60 @@ export class ExternalResponseCacheService {
     const callResultsRepo = new ApiCallResults();
     callResultsRepo.chainId = Number(chainId);
     callResultsRepo.key = key;
-    callResultsRepo.value = entity;
+    callResultsRepo.value = this.cleanUnicode(entity);
     await this.apiCallResultsRepo.upsert(callResultsRepo, ['key']);
+  }
+
+  /**
+   * Recursively removes Unicode control characters from strings within any data structure.
+   * Removes control characters (U+0000 to U+001F) and extended control characters
+   *   (U+007F to U+009F), then trims whitespace
+   *
+   * @param obj - The input value to clean, can be of any type
+   * @returns The cleaned version of the input with all Unicode control characters removed
+   *
+   * @example
+   * cleanUnicode("Hello\u0000World") // Returns "HelloWorld"
+   * cleanUnicode(["Te\u0001st", { key: "Va\u0002lue" }]) // Returns ["Test", { key: "Value" }]
+   */
+  private cleanUnicode(obj) {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    if (typeof obj === 'string') {
+      return obj
+        .split('')
+        // Filter out unwanted control characters
+        .filter((char) => {
+          const code = char.charCodeAt(0); // Get the Unicode code of the character
+          // Remove characters that are control characters (<= 0x1f)
+          // or extended control characters (between 0x7f and 0x9f)
+          return !(code <= 0x1f || (code >= 0x7f && code <= 0x9f));
+        })
+        .join('')
+        .trim();  // Remove any leading or trailing spaces from the string
+    }
+
+
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.cleanUnicode(item));
+    }
+
+    // Handle objects
+    if (typeof obj === 'object') {
+      const cleaned = {};
+
+      for (const [key, value] of Object.entries(obj)) {
+        cleaned[key] = this.cleanUnicode(value);
+      }
+
+      return cleaned;
+    }
+
+    // Return other types as-is (numbers, booleans, etc.)
+    return obj;
   }
 
   getRestClient(): AsyncRedis {

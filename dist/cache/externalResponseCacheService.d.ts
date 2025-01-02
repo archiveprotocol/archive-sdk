@@ -26,6 +26,19 @@ export declare class ExternalResponseCacheService {
     cacheOrPerform(chainId: string, cacheKey: string, ttl: number, onCacheMiss: any): Promise<any>;
     private maybeCacheResult;
     private saveResultToDb;
+    /**
+     * Recursively removes Unicode control characters from strings within any data structure.
+     * Removes control characters (U+0000 to U+001F) and extended control characters
+     *   (U+007F to U+009F), then trims whitespace
+     *
+     * @param obj - The input value to clean, can be of any type
+     * @returns The cleaned version of the input with all Unicode control characters removed
+     *
+     * @example
+     * cleanUnicode("Hello\u0000World") // Returns "HelloWorld"
+     * cleanUnicode(["Te\u0001st", { key: "Va\u0002lue" }]) // Returns ["Test", { key: "Value" }]
+     */
+    private cleanUnicode;
     getRestClient(): AsyncRedis;
     private maybeAddPrefix;
     private replacer;
