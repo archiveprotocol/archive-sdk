@@ -28,11 +28,11 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)('decimal', { transformer: new bigNumberNumericTransformer_1.BigNumberNumericTransformer() }),
     __metadata("design:type", bignumber_js_1.default)
-], UserProtocolPositionSnapshot.prototype, "basePositionCostUsd", void 0);
+], UserProtocolPositionSnapshot.prototype, "userPrincipalCostUsd", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', { transformer: new bigNumberNumericTransformer_1.BigNumberNumericTransformer() }),
     __metadata("design:type", bignumber_js_1.default)
-], UserProtocolPositionSnapshot.prototype, "basePositionUnitCostUsd", void 0);
+], UserProtocolPositionSnapshot.prototype, "userPrincipalUnitCostUsd", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', { transformer: new bigNumberNumericTransformer_1.BigNumberNumericTransformer() }),
     __metadata("design:type", bignumber_js_1.default)
@@ -64,7 +64,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)('decimal', { transformer: new bigNumberNumericTransformer_1.BigNumberNumericTransformer() }),
     __metadata("design:type", bignumber_js_1.default)
-], UserProtocolPositionSnapshot.prototype, "basePositionShares", void 0);
+], UserProtocolPositionSnapshot.prototype, "userPrincipalShares", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', { transformer: new bigNumberNumericTransformer_1.BigNumberNumericTransformer(), nullable: true }),
     __metadata("design:type", bignumber_js_1.default)

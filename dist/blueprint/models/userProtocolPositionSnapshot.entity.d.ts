@@ -4,8 +4,8 @@ import BigNumber from 'bignumber.js';
 import { Relation } from 'typeorm';
 export declare class UserProtocolPositionSnapshot {
     id: number;
-    basePositionCostUsd: BigNumber;
-    basePositionUnitCostUsd: BigNumber;
+    userPrincipalCostUsd: BigNumber;
+    userPrincipalUnitCostUsd: BigNumber;
     positionUsdValueAtBlock: BigNumber;
     blockNumber: number;
     timestamp: number;
@@ -13,7 +13,7 @@ export declare class UserProtocolPositionSnapshot {
     txFeeUsd: BigNumber;
     gasTokenAmount: BigNumber;
     positionSharesAtBlock: BigNumber;
-    basePositionShares: BigNumber;
+    userPrincipalShares: BigNumber;
     exitRatio: BigNumber;
     exitedCostUsd: BigNumber;
     exitedValueUsd: BigNumber;

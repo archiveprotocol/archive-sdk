@@ -23,10 +23,10 @@ export class UserProtocolPositionSnapshot {
   id: number;
 
   @Column('decimal', { transformer: new BigNumberNumericTransformer() })
-  basePositionCostUsd: BigNumber;
+  userPrincipalCostUsd: BigNumber;
 
   @Column('decimal', { transformer: new BigNumberNumericTransformer() })
-  basePositionUnitCostUsd: BigNumber;
+  userPrincipalUnitCostUsd: BigNumber;
 
   @Column('decimal', { transformer: new BigNumberNumericTransformer() })
   positionUsdValueAtBlock: BigNumber;
@@ -50,7 +50,7 @@ export class UserProtocolPositionSnapshot {
   positionSharesAtBlock: BigNumber;
 
   @Column('decimal', { transformer: new BigNumberNumericTransformer() })
-  basePositionShares: BigNumber;
+  userPrincipalShares: BigNumber;
 
   @Column('decimal', { transformer: new BigNumberNumericTransformer(), nullable: true })
   exitRatio: BigNumber;
