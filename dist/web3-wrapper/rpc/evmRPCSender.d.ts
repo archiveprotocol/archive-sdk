@@ -24,6 +24,7 @@ export declare class EvmRPCSender extends AbstractRPCSender {
     attemptFallback?: boolean,
     logRpcFailure?: boolean,
     throwException?: boolean,
+    logMetadata?: any,
   ): Promise<any>;
   private isOptimismOrBaseNetwork;
   getProviderForCall(selectedRpc: RpcInfo): ArchiveJsonRpcProvider;

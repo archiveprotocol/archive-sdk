@@ -36,8 +36,10 @@ export class EvmRPCSender extends AbstractRPCSender {
     attemptFallback = true,
     logRpcFailure = true,
     throwException = false,
+    logMetadata?: any,
   ): Promise<any> {
     const rpcOracle = new RPCOracle(this.networkId, rpcInfos);
+    const selectedRpc = rpcOracle.getNextAvailableRpc();
     const maxAttempts = attemptFallback ? rpcOracle.getRpcCount() : 1;
 
     if (!rpcProviderFn) {
@@ -46,7 +48,6 @@ export class EvmRPCSender extends AbstractRPCSender {
     const kafkaManager = KafkaManager.getInstance();
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const selectedRpc = rpcOracle.getNextAvailableRpc();
       if (!selectedRpc) {
         continue;
       }
@@ -89,7 +90,9 @@ export class EvmRPCSender extends AbstractRPCSender {
     let errorMessage = '';
 
     if (logRpcFailure || throwException) {
-      errorMessage = `All RPCs failed for networkId: ${this.networkId}, function called: ${rpcProviderFn.toString()}`;
+      errorMessage = `All RPCs failed for networkId: ${this.networkId}, rpc called ${
+        selectedRpc.url
+      }, metadata: ${JSON.stringify(logMetadata)}`;
       this.logger.error(errorMessage);
     }
 

@@ -34,16 +34,16 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
         if (this.requestId)
             this.logger.addContext(logger_1.REQUEST_ID, this.requestId);
     }
-    executeCallOrSend(rpcInfos, rpcProviderFn, attemptFallback = true, logRpcFailure = true, throwException = false) {
+    executeCallOrSend(rpcInfos, rpcProviderFn, attemptFallback = true, logRpcFailure = true, throwException = false, logMetadata) {
         return __awaiter(this, void 0, void 0, function* () {
             const rpcOracle = new rpcOracle_1.RPCOracle(this.networkId, rpcInfos);
+            const selectedRpc = rpcOracle.getNextAvailableRpc();
             const maxAttempts = attemptFallback ? rpcOracle.getRpcCount() : 1;
             if (!rpcProviderFn) {
                 throw new Error('RPC Provider function is not defined');
             }
             const kafkaManager = logging_1.KafkaManager.getInstance();
             for (let attempt = 0; attempt < maxAttempts; attempt++) {
-                const selectedRpc = rpcOracle.getNextAvailableRpc();
                 if (!selectedRpc) {
                     continue;
                 }
@@ -69,7 +69,7 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
             }
             let errorMessage = '';
             if (logRpcFailure || throwException) {
-                errorMessage = `All RPCs failed for networkId: ${this.networkId}, function called: ${rpcProviderFn.toString()}`;
+                errorMessage = `All RPCs failed for networkId: ${this.networkId}, rpc called ${selectedRpc.url}, metadata: ${JSON.stringify(logMetadata)}`;
                 this.logger.error(errorMessage);
             }
             if (throwException) {
