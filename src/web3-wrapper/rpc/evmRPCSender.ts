@@ -34,7 +34,7 @@ export class EvmRPCSender extends AbstractRPCSender {
     rpcInfos: RpcInfo[],
     rpcProviderFn?: (provider: ArchiveJsonRpcProvider) => Promise<any>,
     attemptFallback = true,
-    logRpcFailure = true,
+    logRpcFailure = false,
     throwException = false,
     logMetadata?: any,
   ): Promise<any> {

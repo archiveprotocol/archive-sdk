@@ -34,7 +34,7 @@ class EvmRPCSender extends abstractRPCSender_1.AbstractRPCSender {
         if (this.requestId)
             this.logger.addContext(logger_1.REQUEST_ID, this.requestId);
     }
-    executeCallOrSend(rpcInfos, rpcProviderFn, attemptFallback = true, logRpcFailure = true, throwException = false, logMetadata) {
+    executeCallOrSend(rpcInfos, rpcProviderFn, attemptFallback = true, logRpcFailure = false, throwException = false, logMetadata) {
         return __awaiter(this, void 0, void 0, function* () {
             const rpcOracle = new rpcOracle_1.RPCOracle(this.networkId, rpcInfos);
             const selectedRpc = rpcOracle.getNextAvailableRpc();
