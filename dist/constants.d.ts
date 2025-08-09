@@ -24,7 +24,8 @@ export declare enum CHAINID {
     SCROLL = "534352",
     METIS = "1088",
     BERACHAIN_TESTNET = "80084",
-    BERACHAIN = "80094"
+    BERACHAIN = "80094",
+    UNICHAIN = "130"
 }
 export declare const MAX_RETRY_ATTEMPTS = 3;
 export declare const ONE_MIN: number;

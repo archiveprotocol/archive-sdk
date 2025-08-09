@@ -22,3 +22,4 @@ export * from './scrollNetworkConfig';
 export * from './zkSyncNetworkConfig';
 export * from './berachainNetworkConfig';
 export * from './berachainTestNetworkConfig';
+export * from './unichainNetworkConfig';

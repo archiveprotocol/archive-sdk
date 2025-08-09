@@ -38,4 +38,5 @@ __exportStar(require("./scrollNetworkConfig"), exports);
 __exportStar(require("./zkSyncNetworkConfig"), exports);
 __exportStar(require("./berachainNetworkConfig"), exports);
 __exportStar(require("./berachainTestNetworkConfig"), exports);
+__exportStar(require("./unichainNetworkConfig"), exports);
 //# sourceMappingURL=index.js.map
