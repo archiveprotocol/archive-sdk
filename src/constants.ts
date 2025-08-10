@@ -25,6 +25,7 @@ export enum CHAINID {
   METIS = '1088',
   BERACHAIN_TESTNET = '80084',
   BERACHAIN = '80094',
+  UNICHAIN = '130'
 }
 
 export const MAX_RETRY_ATTEMPTS = 3;

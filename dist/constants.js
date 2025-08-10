@@ -29,6 +29,7 @@ var CHAINID;
     CHAINID["METIS"] = "1088";
     CHAINID["BERACHAIN_TESTNET"] = "80084";
     CHAINID["BERACHAIN"] = "80094";
+    CHAINID["UNICHAIN"] = "130";
 })(CHAINID || (exports.CHAINID = CHAINID = {}));
 exports.MAX_RETRY_ATTEMPTS = 3;
 exports.ONE_MIN = 1000 * 60;
