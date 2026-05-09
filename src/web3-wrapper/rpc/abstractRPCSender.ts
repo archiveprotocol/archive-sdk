@@ -12,7 +12,7 @@ export class AbstractRPCSender {
     return (
       retryErrorCodes.includes(error.code) ||
       retryErrorCodes.includes(error.error?.code) ||
-      [403, 429].includes(error.status)
+      [402, 403, 429].includes(error.status)
     );
   }
 }
